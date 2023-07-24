@@ -13,13 +13,13 @@ To get started with the CS-50 Finance, follow these steps:
 1. Clone the repository to your local machine:
 
 ```
-git clone https://github.com/your-username/cs-50-finance.git
+git clone https://github.com/your-username/c50-finance.git
 ```
 
 2. Change into the project directory:
 
 ```
-cd cs-50-finance
+cd cs50-finance
 ```
 
 3. Install the necessary dependencies:
