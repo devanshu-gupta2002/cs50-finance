@@ -1,7 +1,5 @@
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Problem Description](#problem-description)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Features](#features)
