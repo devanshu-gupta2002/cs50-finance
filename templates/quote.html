@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+
+<main class="container py-5 text-center">
+
+  <form action="/quote" method="post">
+    <div class="mb-3">
+      <input autocomplete="off" autofocus class="form-control w-auto mx-auto" name="symbol" placeholder="Symbol" type="text">
+    </div>
+
+      <button class="btn btn-primary" type="submit">Quote</button>
+
+  </form>
+</main>
+
+{% endblock %}

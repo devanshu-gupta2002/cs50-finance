@@ -36,21 +36,34 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+    
+    # cash = db.execute("SELECT cash FROM users WHERE id = ?", id=session["user_id"])
+
+    return render_template("home.html")
 
 
 @app.route("/buy", methods=["GET", "POST"])
 @login_required
 def buy():
     """Buy shares of stock"""
-    return apology("TODO")
+
+    if request.method == "POST":
+        
+        if not request.form.get("symbol"):
+            return apology("must provide symbol", 403)
+        
+        elif not request.form.get("shares"):
+            return apology("must provide shares")
+        
+
+    return render_template("buy.html")
 
 
 @app.route("/history")
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+    return render_template("history.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -116,7 +129,7 @@ def register():
         
         #ensure password are equal
         elif request.form.get("password")!=request.form.get("confirmation"):
-            return apology("passwword do not match")
+            return apology("password do not match")
         
         username = request.form.get("username")
         hash = generate_password_hash(request.form.get("password"))
@@ -140,7 +153,22 @@ def register():
 @login_required
 def quote():
     """Get stock quote."""
-    return apology("TODO")
+    # if GET method, return quote.html form
+    if request.method == "GET":
+        return render_template("quote.html")
+
+    # if POST method, get info from form, make sure it's a valid stock
+    else:
+
+        # lookup ticker symbol from quote.html form
+        symbol = lookup(request.form.get("symbol"))
+
+        # if lookup() returns None, it's not a valid stock symbol
+        if symbol == None:
+            return apology("invalid stock symbol", 403)
+
+        # Return template with stock quote, passing in symbol dict
+        return render_template("quoted.html", symbol=symbol)
 
 
 
@@ -148,4 +176,4 @@ def quote():
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+    return render_template("sell.html")
