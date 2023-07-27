@@ -17,14 +17,24 @@
         </tr>
       </thead>
       <tbody>
-
+        {% for row in rows %}
+          <tr>
+            <td>{{row['symbol']}}</td>
+            <td>{{row['name']}}</td>
+            <td>{{row['shares']}}</td>
+            <td>{{row['price']}}</td>
+            <td>{{row['total']}}</td>
+          </tr>
+        {% endfor %}
       </tbody>
       <tfoot>
         <tr>
           <td class="border-0 fw-bold text-end" colspan="4">Cash</td>
+          <td>{{cash}}</td>
         </tr>
         <tr>
           <td class="border-0 fw-bold text-end" colspan="4">TOTAL</td>
+          <td><b>{{sum}}</b></td>
         </tr>
       </tfoot>
     </table>

@@ -37,10 +37,25 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    
-    # cash = db.execute("SELECT cash FROM users WHERE id = ?", id=session["user_id"])
+    userid=session["user_id"]
+    rows=db.execute("SELECT * FROM portfolio WHERE userid=:userid", userid=userid)
+    cash=db.execute("SELECT cash FROM users WHERE id=:id", id=userid)
+    cash=cash[0]['cash']    #current balance
+    sum=cash                #total value of all the cash holdings
 
-    return render_template("home.html")
+    for row in rows:        #adding name, current price, total in rows
+        look=lookup(row['symbol'])
+        row['name']=look['name']
+        row['price']=look['price']
+        row['total']=row['price']*row['shares']
+
+        sum+=row['total']
+
+        #convert price and total to usd
+        row['price']=usd(row['price'])
+        row['total']=usd(row['total'])
+
+    return render_template("home.html", rows=rows, cash=usd(cash), sum=usd(sum))
 
 
 @app.route("/buy", methods=["GET", "POST"])
