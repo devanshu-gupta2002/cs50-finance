@@ -67,15 +67,15 @@ def buy():
         symbol = request.form.get("symbol")
         shares = request.form.get("shares")
         if not symbol:
-            return apology("must provide symbol", 403)
+            return apology("Must provide symbol", 403)
         elif not shares:
-            return apology("must provide shares")
+            return apology("Must provide shares")
         
         symbol=symbol.upper()
         shares=int(shares)
         quote = lookup(symbol)
         if quote==None:
-            return apology("must provide valid symbol")
+            return apology("Must provide valid symbol")
         
         userid=session["user_id"]
         purchase=quote['price']*shares
@@ -88,7 +88,7 @@ def buy():
         # return jsonify(remainder)
         
         if remainder<0:
-            return apology("insufficient balance", 403)
+            return apology("Insufficient balance", 403)
         
         row = db.execute("SELECT * FROM portfolio WHERE userid=:userid AND symbol=:symbol", userid=userid, symbol=symbol)
         if len(row)!=1:
@@ -101,6 +101,10 @@ def buy():
         db.execute("UPDATE portfolio SET shares=:newshares where userid=:userid AND symbol=:symbol", newshares=newshares, userid=userid, symbol=symbol)             
         db.execute("UPDATE users SET cash=:remainder WHERE id=:id", remainder=remainder, id=userid)
 
+        #update history
+        db.execute("INSERT INTO history (userid, symbol, shares, method, price, transacted) VALUES (:userid, :symbol, :shares, 'Buy', :price, :date_time)", 
+                userid=userid, symbol=symbol, shares=shares, price=quote['price'], date_time=date_time)
+
         return redirect("/")
 
     return render_template("buy.html")
@@ -110,7 +114,9 @@ def buy():
 @login_required
 def history():
     """Show history of transactions"""
-    return render_template("history.html")
+
+    rows=db.execute("SELECT * FROM history WHERE userid=:userid", userid=session["user_id"])
+    return render_template("history.html", rows=rows)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -125,17 +131,17 @@ def login():
 
         # Ensure username was submitted
         if not request.form.get("username"):
-            return apology("must provide username", 403)
+            return apology("Must provide username", 403)
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return apology("must provide password", 403)
+            return apology("Must provide password", 403)
 
         # Query database for username
         rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return apology("invalid username and/or password", 403)
+            return apology("Invalid username and/or password", 403)
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -167,14 +173,14 @@ def register():
     if request.method=="POST":
         # Ensure username was submitted
         if not request.form.get("username"):
-            return apology("must provide username", 403)
+            return apology("Must provide username", 403)
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return apology("must provide password", 403)
+            return apology("Must provide password", 403)
         
         #ensure password are equal
         elif request.form.get("password")!=request.form.get("confirmation"):
-            return apology("password do not match")
+            return apology("Password does not match")
         
         username = request.form.get("username")
         hash = generate_password_hash(request.form.get("password"))
@@ -183,7 +189,7 @@ def register():
         rows = db.execute("SELECT * FROM users WHERE username = ?", username)
 
         if len(rows)!=0:
-            return apology("username is already taken", 403)
+            return apology("Username is already taken", 403)
         
         #insert (username, hash) into DB
         db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", username=username, hash=hash)
@@ -210,7 +216,7 @@ def quote():
 
         # if lookup() returns None, it's not a valid stock symbol
         if symbol == None:
-            return apology("invalid stock symbol", 403)
+            return apology("Invalid stock symbol", 403)
 
         # Return template with stock quote, passing in symbol dict
         return render_template("quoted.html", symbol=symbol)
@@ -235,12 +241,12 @@ def sell():
         rows=db.execute("SELECT * FROM portfolio WHERE userid=:userid AND symbol=:symbol", userid=userid, symbol=symbol)
 
         if not shares:
-            return apology("must provide number of shares", 403)
+            return apology("Must provide number of shares", 403)
         
         oldshares = rows[0]['shares']
         shares=int(shares)
         if shares>oldshares:
-            return apology("shares sold can't exceed shares owned", 403)
+            return apology("Shares sold can't exceed shares owned", 403)
         
         sold=quote['price']*shares                      #selling price of stocks sold
 
@@ -257,6 +263,12 @@ def sell():
             db.execute("UPDATE portfolio SET shares=:newshares WHERE userid=:userid AND symbol=:symbol", newshares=newshares, userid=userid, symbol=symbol)
         else:
             db.execute("DELETE FROM portfolio WHERE userid=:userid AND symbol=:symbol", userid=userid, symbol=symbol)
+        
+        ts=time.time()
+        date_time = datetime.fromtimestamp(ts)
+        # update history table
+        db.execute("INSERT INTO history (userid, symbol, shares, method, price, transacted) VALUES (:userid, :symbol, :shares, 'Sell', :price, :date_time)", 
+                userid=userid, symbol=symbol, shares=shares, price=quote['price'], date_time=date_time)
         
         return redirect("/")
 
