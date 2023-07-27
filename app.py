@@ -221,4 +221,45 @@ def quote():
 @login_required
 def sell():
     """Sell shares of stock"""
-    return render_template("sell.html")
+    userid=session["user_id"]
+
+    if request.method == "GET":
+        portfolio = db.execute("SELECT symbol FROM portfolio WHERE userid=:userid", userid=userid)
+
+        return render_template("sell.html", portfolio=portfolio)
+    
+    else:
+        symbol=request.form.get("symbol")
+        shares=request.form.get("shares")
+        quote=lookup(symbol)
+        rows=db.execute("SELECT * FROM portfolio WHERE userid=:userid AND symbol=:symbol", userid=userid, symbol=symbol)
+
+        if not shares:
+            return apology("must provide number of shares", 403)
+        
+        oldshares = rows[0]['shares']
+        shares=int(shares)
+        if shares>oldshares:
+            return apology("shares sold can't exceed shares owned", 403)
+        
+        sold=quote['price']*shares                      #selling price of stocks sold
+
+        cash = db.execute("SELECT cash FROM users WHERE id = :id", id=session['user_id'])
+        cash = cash[0]['cash']
+        cash = cash + sold                              #final balance
+
+        #update cash in db
+        db.execute("UPDATE users SET cash=:cash WHERE id=:id", cash=cash, id=userid)      
+
+        #if shares remain update portfolio with updated stocks
+        newshares=oldshares-shares
+        if newshares>0:
+            db.execute("UPDATE portfolio SET shares=:newshares WHERE userid=:userid AND symbol=:symbol", newshares=newshares, userid=userid, symbol=symbol)
+        else:
+            db.execute("DELETE FROM portfolio WHERE userid=:userid AND symbol=:symbol", userid=userid, symbol=symbol)
+        
+        return redirect("/")
+
+
+
+

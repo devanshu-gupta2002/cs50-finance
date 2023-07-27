@@ -11,8 +11,10 @@
   <form action="/sell" method="post">
       <div class="mb-3">
           <select class="form-select mx-auto w-auto" name="symbol">
-              <option disabled selected>Symbol</option>
-              
+              <option value="" disabled selected>Symbol</option>
+                {% for row in portfolio %}
+                  <option value="{{row['symbol']}}">{{row['symbol']}}</option>
+                {% endfor %}
           </select>
       </div>
       <div class="mb-3">
