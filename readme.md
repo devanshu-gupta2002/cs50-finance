@@ -8,7 +8,7 @@
 
 ## Features
 
-The CS-50 Finance application comes with the following features:
+CS-50 Finance application comes with the following features:
 
 - User registration and authentication.
 - Stock symbol lookup to get real-time stock prices.
@@ -17,7 +17,7 @@ The CS-50 Finance application comes with the following features:
 - Transaction history showing past buys and sells.
 - Real-time balance updates upon stock transactions.
 
-Site URL: [cs50-finance] (https://cs50-finance.onrender.com)
+Site URL: [!cs50-finance] (https://cs50-finance.onrender.com)
 
 
 ## Technologies Used
