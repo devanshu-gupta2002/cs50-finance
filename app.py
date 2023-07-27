@@ -1,7 +1,8 @@
 import os
-
+import time
+from datetime import datetime
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, jsonify
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -46,15 +47,46 @@ def index():
 @login_required
 def buy():
     """Buy shares of stock"""
-
+    
     if request.method == "POST":
-        
-        if not request.form.get("symbol"):
+        symbol = request.form.get("symbol")
+        shares = request.form.get("shares")
+        if not symbol:
             return apology("must provide symbol", 403)
-        
-        elif not request.form.get("shares"):
+        elif not shares:
             return apology("must provide shares")
         
+        symbol=symbol.upper()
+        shares=int(shares)
+        quote = lookup(symbol)
+        if quote==None:
+            return apology("must provide valid symbol")
+        
+        userid=session["user_id"]
+        purchase=quote['price']*shares
+        balance=db.execute("SELECT cash FROM users WHERE id = :id", id=userid)
+        remainder=balance[0]["cash"]-purchase
+        ts=time.time()
+        date_time = datetime.fromtimestamp(ts)
+        # return jsonify(date_time)
+        # return jsonify(balance)
+        # return jsonify(remainder)
+        
+        if remainder<0:
+            return apology("insufficient balance", 403)
+        
+        row = db.execute("SELECT * FROM portfolio WHERE userid=:userid AND symbol=:symbol", userid=userid, symbol=symbol)
+        if len(row)!=1:
+            db.execute("INSERT INTO portfolio (userid, symbol) VALUES (:userid, :symbol)", userid=userid, symbol=symbol)
+        
+        oldshares=db.execute("SELECT shares FROM portfolio WHERE userid=:userid AND symbol=:symbol", userid=userid, symbol=symbol)
+        # return jsonify(oldshares)
+        oldshares=int(oldshares[0]["shares"])
+        newshares=oldshares+shares
+        db.execute("UPDATE portfolio SET shares=:newshares where userid=:userid AND symbol=:symbol", newshares=newshares, userid=userid, symbol=symbol)             
+        db.execute("UPDATE users SET cash=:remainder WHERE id=:id", remainder=remainder, id=userid)
+
+        return redirect("/")
 
     return render_template("buy.html")
 
@@ -79,7 +111,6 @@ def login():
         # Ensure username was submitted
         if not request.form.get("username"):
             return apology("must provide username", 403)
-
         # Ensure password was submitted
         elif not request.form.get("password"):
             return apology("must provide password", 403)
@@ -122,7 +153,6 @@ def register():
         # Ensure username was submitted
         if not request.form.get("username"):
             return apology("must provide username", 403)
-
         # Ensure password was submitted
         elif not request.form.get("password"):
             return apology("must provide password", 403)
