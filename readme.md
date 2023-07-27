@@ -1,9 +1,33 @@
 ## Table of Contents
 
-- [Installation](#installation)
-- [Usage](#usage)
 - [Features](#features)
 - [Technologies Used](#technologies-used)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Screenshots](#screenshots)
+
+## Features
+
+The CS-50 Finance application comes with the following features:
+
+- User registration and authentication.
+- Stock symbol lookup to get real-time stock prices.
+- Buying and selling stocks.
+- Display of user portfolio with current stock holdings.
+- Transaction history showing past buys and sells.
+- Real-time balance updates upon stock transactions.
+
+Site URL: [cs50-finance] (https://cs50-finance.onrender.com)
+
+
+## Technologies Used
+
+The CS-50 Finance is built using the following technologies:
+
+- Python: The back-end of the application is written in Python.
+- Flask: A micro web framework is used for building the web application.
+- SQLite: The database system used for storing user information and transactions.
+- HTML/CSS: The front-end of the application is built using HTML and CSS.
 
 
 ## Installation
@@ -46,22 +70,9 @@ flask run
 
 The application will be accessible at `http://localhost:5000` in your web browser.
 
-## Features
+## Screenshots
 
-The CS-50 Finance application comes with the following features:
+[!register](static/register.png)
+[!index](static/index.png)
+[!history](static/history.png)
 
-- User registration and authentication.
-- Stock symbol lookup to get real-time stock prices.
-- Buying and selling stocks.
-- Display of user portfolio with current stock holdings.
-- Transaction history showing past buys and sells.
-- Real-time balance updates upon stock transactions.
-
-## Technologies Used
-
-The CS-50 Finance is built using the following technologies:
-
-- Python: The back-end of the application is written in Python.
-- Flask: A micro web framework is used for building the web application.
-- SQLite: The database system used for storing user information and transactions.
-- HTML/CSS: The front-end of the application is built using HTML and CSS.
