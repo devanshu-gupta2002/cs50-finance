@@ -17,7 +17,7 @@ CS-50 Finance application comes with the following features:
 - Transaction history showing past buys and sells.
 - Real-time balance updates upon stock transactions.
 
-Site URL: [!cs50-finance] (https://cs50-finance.onrender.com)
+Site URL: (https://cs50-finance.onrender.com)
 
 
 ## Technologies Used
