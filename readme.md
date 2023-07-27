@@ -72,7 +72,7 @@ The application will be accessible at `http://localhost:5000` in your web browse
 
 ## Screenshots
 
-[!register](static/register.png)
-[!index](static/index.png)
-[!history](static/history.png)
+![register](static/register.png)
+![index](static/index.png)
+![history](static/history.png)
 
