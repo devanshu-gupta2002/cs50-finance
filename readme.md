@@ -68,11 +68,9 @@ To run the CS-50 Finance application, execute the following command in your term
 flask run
 ```
 
-The application will be accessible at `http://localhost:5000` in your web browser.
-
 ## Screenshots
 
-![register](static/register.png)
+![register](static/history.png)
 ![index](static/index.png)
 ![history](static/history.png)
 
